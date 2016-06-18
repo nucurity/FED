@@ -16,52 +16,19 @@ namespace FED.Controllers
     public class ProductsController : Controller
     {
         private FEDContext db = new FEDContext();
-        //*********************TWIST***********************
-
-        //used by twist
-        private ApplicationSignInManager _signInManager;
-        private ApplicationUserManager _userManager;
-
-        //used by twist
-        public ProductsController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
-        {
-            UserManager = userManager;
-            SignInManager = signInManager;
-        }
-
-        public ApplicationUserManager UserManager
-        {
-            get
-            {
-                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            }
-            private set
-            {
-                _userManager = value;
-            }
-        }
-
-        public ApplicationSignInManager SignInManager
-        {
-            get
-            {
-                return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
-            }
-            private set
-            {
-                _signInManager = value;
-            }
-        }
-
-        //*******************default************************
+        
 
         // GET: Products
+        [Authorize]
         public async Task<ActionResult> Index()
         {
+            var id = User.Identity.GetUserId();
+            //var model = 
             return View(await db.Products.ToListAsync());
         }
 
         // GET: Products/Details/5
+        [Authorize]
         public async Task<ActionResult> Details(int? id)
         {
             if (id == null)
@@ -77,24 +44,11 @@ namespace FED.Controllers
         }
 
         // GET: Products/Create
+        [Authorize]
         public ActionResult Create()
         {
-            //*********************
-
-            var userId = User.Identity.GetUserId();
-            var model = new IndexViewModel
-            {
-                HasPassword = HasPassword(),
-                PhoneNumber = await UserManager.GetPhoneNumberAsync(userId),
-                TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),
-                Logins = await UserManager.GetLoginsAsync(userId),
-                BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId)
-            };
-            return View(model);
-
-            //******************************************
-
-            //return View();
+            
+            return View();
         }
 
         // POST: Products/Create

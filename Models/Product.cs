@@ -9,7 +9,7 @@ namespace FED.Models
     public partial class Product
     {
         public int ProductID { get; set; }
-
+        
         [Required]
         public string Name { get; set; }
 
