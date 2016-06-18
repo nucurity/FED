@@ -22,7 +22,7 @@ namespace FED.Controllers
         [Authorize]
         public async Task<ActionResult> Index()
         {
-            var id = User.Identity.GetUserId();
+            //var id = User.Identity.GetUserId();
             //var model = 
             return View(await db.Products.ToListAsync());
         }

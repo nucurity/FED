@@ -11,10 +11,13 @@ namespace FED.Models
         public int ProductID { get; set; }
         
         [Required]
+        [Display(Name = "Product name")]
         public string Name { get; set; }
 
         public int? Quantiry { get; set; }
 
+        [DataType(DataType.Date)]
+        [Display(Name="Expiration date")]
         public DateTime DateOfExp { get; set; }
 
         [Required]
