@@ -17,15 +17,22 @@ namespace FED.Controllers
     {
         private FEDContext db = new FEDContext();
         
-
         // GET: Products
         [Authorize]
-        public async Task<ActionResult> Index()
+        public ViewResult Index()
         {
-            //var id = User.Identity.GetUserId();
-            //var model = 
-            return View(await db.Products.ToListAsync());
+            string CurrentId = User.Identity.GetUserId();
+
+            //var prodlist = await db.Products.Where(e => e.userID.Equals(CurrentId)).ToListAsync();
+
+            var prodlist = from item in db.Products
+                           where item.userID == CurrentId
+                           select item;
+
+            return View(prodlist.ToList());
+           
         }
+
 
         // GET: Products/Details/5
         [Authorize]
@@ -47,8 +54,10 @@ namespace FED.Controllers
         [Authorize]
         public ActionResult Create()
         {
-            
-            return View();
+            var Product = new Product();
+            Product.userID = User.Identity.GetUserId();
+            Product.DateOfExp = DateTime.Now;
+            return View(Product);
         }
 
         // POST: Products/Create
@@ -56,8 +65,10 @@ namespace FED.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<ActionResult> Create([Bind(Include = "ProductID,Name,Quantiry,DateOfExp,userID")] Product product)
         {
+            product.userID = User.Identity.GetUserId();
             if (ModelState.IsValid)
             {
                 db.Products.Add(product);
@@ -69,6 +80,7 @@ namespace FED.Controllers
         }
 
         // GET: Products/Edit/5
+        [Authorize]
         public async Task<ActionResult> Edit(int? id)
         {
             if (id == null)
@@ -80,6 +92,8 @@ namespace FED.Controllers
             {
                 return HttpNotFound();
             }
+            else
+                product.userID = User.Identity.GetUserId();
             return View(product);
         }
 
@@ -88,10 +102,13 @@ namespace FED.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<ActionResult> Edit([Bind(Include = "ProductID,Name,Quantiry,DateOfExp,userID")] Product product)
         {
+            product.userID = User.Identity.GetUserId();
             if (ModelState.IsValid)
             {
+                
                 db.Entry(product).State = EntityState.Modified;
                 await db.SaveChangesAsync();
                 return RedirectToAction("Index");
@@ -100,6 +117,7 @@ namespace FED.Controllers
         }
 
         // GET: Products/Delete/5
+        [Authorize]
         public async Task<ActionResult> Delete(int? id)
         {
             if (id == null)
@@ -117,6 +135,7 @@ namespace FED.Controllers
         // POST: Products/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<ActionResult> DeleteConfirmed(int id)
         {
             Product product = await db.Products.FindAsync(id);
@@ -133,5 +152,6 @@ namespace FED.Controllers
             }
             base.Dispose(disposing);
         }
+
     }
 }
